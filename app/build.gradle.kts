@@ -97,7 +97,7 @@ fun Project.setupKtlint() {
             "--reporter=plain?group_by_file",
             "--reporter=checkstyle,output=$buildDir/ktlint.xml"
         ) + directoriesWithSource)
-        description = "Check Kotlin code style"
+        description = "Check Kotlin code style."
         classpath = ktlintConfiguration
         mainClass.set("com.pinterest.ktlint.Main")
         args = ktlintArgs
@@ -106,7 +106,7 @@ fun Project.setupKtlint() {
 
     tasks.register("ktlintFormat", JavaExec::class) {
         group = "formatting"
-        description = "Fix Kotlin code style deviations"
+        description = "Fix Kotlin code style deviations."
         classpath = ktlintConfiguration
         mainClass.set("com.pinterest.ktlint.Main")
         args = listOf("-F") + directoriesWithSource
