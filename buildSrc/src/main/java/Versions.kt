@@ -6,10 +6,13 @@ object Versions {
     const val espresso = "3.5.1"
     const val gson = "2.10.1"
     const val hilt = "2.44"
+    const val hiltCompiler = "1.0.0"
+    const val hiltNavigationCompose = "1.0.0"
     const val jUnit = "4.13.2"
     const val jUnitExt = "1.1.5"
     const val lifecycleKtx = "2.3.1"
     const val retrofit = "2.9.0"
+    const val okHttp = "4.11.0"
     const val room = "2.5.1"
 
 }

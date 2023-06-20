@@ -32,8 +32,10 @@ object Dependencies {
     }
 
     object Hilt {
-        const val compiler = "com.google.dagger:hilt-compiler:${Versions.hilt}"
-        const val core = "com.google.dagger:hilt-android:${Versions.hilt}"
+        const val daggerCompiler = "com.google.dagger:hilt-compiler:${Versions.hilt}"
+        const val daggerCore = "com.google.dagger:hilt-android:${Versions.hilt}"
+        const val compiler = "androidx.hilt:hilt-compiler:${Versions.hiltCompiler}"
+        const val navigationCompose = "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationCompose}"
     }
 
     object JUnit {
@@ -43,11 +45,16 @@ object Dependencies {
 
     object Retrofit {
         const val core = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
+        const val gsonConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+        const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.okHttp}"
+        const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
+        const val loggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okHttp}"
     }
 
     object Room {
         const val compiler = "androidx.room:room-compiler:${Versions.room}"
         const val core = "androidx.room:room-runtime:${Versions.room}"
+        const val extension = "androidx.room:room-ktx:${Versions.room}"
         const val paging = "androidx.room:room-paging:${Versions.room}"
         const val test = "androidx.room:room-testing:${Versions.room}"
     }
@@ -63,20 +70,26 @@ object Dependencies {
         Compose.material3,
         Compose.tooling,
         Gson.core,
-        Hilt.core,
+        Hilt.daggerCore,
+        Hilt.navigationCompose,
         Retrofit.core,
-        Room.compiler,
+        Retrofit.gsonConverter,
+        Retrofit.loggingInterceptor,
+        Retrofit.okHttp,
         Room.core,
+        Room.extension,
         Room.paging
     )
 
     val kaptLibraries = arrayListOf(
         Hilt.compiler,
+        Hilt.daggerCompiler,
         Room.compiler,
     )
 
     val testLibraries = arrayListOf(
         JUnit.core,
+        Retrofit.mockWebServer,
         Room.test,
     )
 
