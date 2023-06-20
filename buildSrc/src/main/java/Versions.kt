@@ -10,6 +10,7 @@ object Versions {
     const val hiltNavigationCompose = "1.0.0"
     const val jUnit = "4.13.2"
     const val jUnitExt = "1.1.5"
+    const val ktlint = "0.45.2"
     const val lifecycleKtx = "2.3.1"
     const val retrofit = "2.9.0"
     const val okHttp = "4.11.0"

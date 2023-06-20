@@ -43,6 +43,10 @@ object Dependencies {
         const val ext = "androidx.test.ext:junit:${Versions.jUnitExt}"
     }
 
+    object Pinterest {
+        val ktlint = "com.pinterest:ktlint:${Versions.ktlint}"
+    }
+
     object Retrofit {
         const val core = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
         const val gsonConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
