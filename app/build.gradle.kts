@@ -106,7 +106,7 @@ fun Project.setupKtlint() {
 
     tasks.register("ktlintFormat", JavaExec::class) {
         group = "formatting"
-        description = "Fix Kotlin code style deviations."
+        description = "Fix Kotlin code style deviations"
         classpath = ktlintConfiguration
         mainClass.set("com.pinterest.ktlint.Main")
         args = listOf("-F") + directoriesWithSource
