@@ -2,7 +2,7 @@ package me.ismartin.pokedexcompose.data.remote.models.pokemon
 
 import com.google.gson.annotations.SerializedName
 
-data class Result(
+data class SimplePokemonResult(
     @SerializedName("name")
     val name: String,
     @SerializedName("url")

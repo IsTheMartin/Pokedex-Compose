@@ -10,7 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import me.ismartin.pokedexcompose.ui.pokedex.PokedexViewModel
 import me.ismartin.pokedexcompose.ui.theme.PokedexComposeTheme
 
 @AndroidEntryPoint
@@ -20,6 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PokedexComposeTheme {
                 // A surface container using the 'background' color from the theme
+                val viewModel: PokedexViewModel = hiltViewModel()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,

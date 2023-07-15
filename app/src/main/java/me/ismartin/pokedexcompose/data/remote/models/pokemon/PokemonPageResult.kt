@@ -2,7 +2,7 @@ package me.ismartin.pokedexcompose.data.remote.models.pokemon
 
 import com.google.gson.annotations.SerializedName
 
-data class PageResult(
+data class PokemonPageResult(
     @SerializedName("count")
     val count: Int,
     @SerializedName("next")
@@ -10,5 +10,5 @@ data class PageResult(
     @SerializedName("previous")
     val previous: Any,
     @SerializedName("results")
-    val results: List<Result>
+    val results: List<SimplePokemonResult>
 )
