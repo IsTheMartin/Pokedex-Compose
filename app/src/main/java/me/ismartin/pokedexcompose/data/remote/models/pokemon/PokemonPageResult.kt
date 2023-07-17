@@ -10,5 +10,5 @@ data class PokemonPageResult(
     @SerializedName("previous")
     val previous: Any,
     @SerializedName("results")
-    val results: List<SimplePokemonResult>
+    val results: List<PokemonResult>
 )

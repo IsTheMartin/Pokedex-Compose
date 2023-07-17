@@ -20,8 +20,6 @@ object PokemonResponses {
     const val POKEMON_JSON = "pokeapi_pokemon_response.json"
     const val POKEMON_TYPE_LIST_JSON = "pokeapi_pokemon_type_list_response.json"
     const val POKEMON_TYPE_JSON = "pokeapi_pokemon_type_response.json"
-    const val POKEMON_STAT_LIST_JSON = "pokeapi_pokemon_stat_list_response.json"
-    const val POKEMON_STAT_JSON = "pokeapi_pokemon_stat_response.json"
     const val POKEMON_SPECIE_LIST_JSON = "pokeapi_pokemon_specie_list_response.json"
     const val POKEMON_SPECIE_JSON = "pokeapi_pokemon_specie_response.json"
 }

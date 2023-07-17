@@ -1,11 +1,9 @@
 package me.ismartin.pokedexcompose.data.remote
 
+import me.ismartin.pokedexcompose.data.remote.models.pokemon.Pokemon
 import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonPageResult
-import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonResult
 import me.ismartin.pokedexcompose.data.remote.models.specie.Specie
 import me.ismartin.pokedexcompose.data.remote.models.specie.SpeciePageResult
-import me.ismartin.pokedexcompose.data.remote.models.stat.Stat
-import me.ismartin.pokedexcompose.data.remote.models.stat.StatPageResult
 import me.ismartin.pokedexcompose.data.remote.models.type.Type
 import me.ismartin.pokedexcompose.data.remote.models.type.TypePageResult
 import retrofit2.Response
@@ -24,7 +22,7 @@ interface PokeApiService {
     @GET("pokemon/{id}")
     suspend fun getPokemonById(
         @Path("id") id: Int,
-    ): Response<PokemonResult>
+    ): Response<Pokemon>
 
     @GET("type")
     suspend fun getTypeList(): Response<TypePageResult>
@@ -33,14 +31,6 @@ interface PokeApiService {
     suspend fun getTypeById(
         @Path("id") id: Int,
     ): Response<Type>
-
-    @GET("stat")
-    suspend fun getStatList(): Response<StatPageResult>
-
-    @GET("stat/{id}")
-    suspend fun getStatById(
-        @Path("id") id: Int,
-    ): Response<Stat>
 
     @GET("pokemon-species")
     suspend fun getPokemonSpecieList(): Response<SpeciePageResult>

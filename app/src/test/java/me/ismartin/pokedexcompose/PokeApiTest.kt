@@ -139,55 +139,15 @@ class PokeApiTest {
         assertEquals("GET", request.method)
 
         assertTrue(response.isSuccessful)
-        val typeId = response.body()?.id
-        val typeName = response.body()?.name
-        val doubleDamageToList = response.body()?.damageRelations?.doubleDamageTo
+        val bodyResponse = response.body()
+        assertNotNull(bodyResponse)
+        val typeId = bodyResponse!!.id
+        val typeName = bodyResponse.name
+        val doubleDamageToList = bodyResponse.damageRelations.getAsJsonArray("double_damage_from")
         assertEquals(10, typeId)
         assertEquals("fire", typeName)
         assertNotNull(doubleDamageToList)
-        assertTrue(doubleDamageToList!!.isNotEmpty())
-    }
-
-    @Test
-    fun `check pokemon stat list with results`() = runBlocking {
-        val mockResponse = MockResponse()
-        val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_STAT_LIST_JSON)
-        mockResponse.setBody(jsonResponse)
-        mockWebServer.enqueue(mockResponse)
-
-        val response = pokeApiService.getStatList()
-        val request = mockWebServer.takeRequest()
-        assertEquals("/stat", request.path)
-        assertEquals("GET", request.method)
-
-        assertTrue(response.isSuccessful)
-        val stats = response.body()?.results
-        assertNotNull(stats)
-        assertEquals(8, response.body()?.count)
-        assertNull(response.body()?.next)
-        assertNull(response.body()?.previous)
-    }
-
-    @Test
-    fun `check pokemon stat with results`() = runBlocking {
-        val mockResponse = MockResponse()
-        val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_STAT_JSON)
-        mockResponse.setBody(jsonResponse)
-        mockWebServer.enqueue(mockResponse)
-
-        val response = pokeApiService.getStatById(3)
-        val request = mockWebServer.takeRequest()
-        assertEquals("/stat/3", request.path)
-        assertEquals("GET", request.method)
-
-        assertTrue(response.isSuccessful)
-        val statId = response.body()?.id
-        val statName = response.body()?.name
-        val statNames = response.body()?.names
-        assertEquals(3, statId)
-        assertEquals("defense", statName)
-        assertNotNull(statNames)
-        assertTrue(statNames!!.isNotEmpty())
+        assertFalse(doubleDamageToList!!.isEmpty)
     }
 
     @Test
@@ -223,15 +183,17 @@ class PokeApiTest {
         assertEquals("GET", request.method)
 
         assertTrue(response.isSuccessful)
-        val pokemonId = response.body()?.id
-        val pokemonName = response.body()?.name
-        val pokemonColor = response.body()?.color?.name
-        val isPokemonLegendary = response.body()?.isLegendary
+        val responseBody = response.body()
+        assertNotNull(responseBody)
+        val pokemonId = responseBody!!.id
+        val pokemonName = responseBody.name
+        val pokemonColor = responseBody.color.get("name").asString
+        val isPokemonLegendary = responseBody.isLegendary
         assertEquals(25, pokemonId)
         assertEquals("pikachu", pokemonName)
         assertNotNull(pokemonColor)
         assertEquals("yellow", pokemonColor!!)
         assertNotNull(isPokemonLegendary)
-        assertFalse(isPokemonLegendary!!)
+        assertFalse(isPokemonLegendary)
     }
 }

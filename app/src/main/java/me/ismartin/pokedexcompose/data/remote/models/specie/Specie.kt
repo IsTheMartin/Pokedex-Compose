@@ -1,5 +1,7 @@
 package me.ismartin.pokedexcompose.data.remote.models.specie
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 data class Specie(
@@ -8,23 +10,23 @@ data class Specie(
     @SerializedName("capture_rate")
     val captureRate: Int,
     @SerializedName("color")
-    val color: Color,
+    val color: JsonObject,
     @SerializedName("egg_groups")
-    val eggGroups: List<EggGroup>,
+    val eggGroups: JsonArray,
     @SerializedName("flavor_text_entries")
-    val flavorTextEntries: List<FlavorTextEntry>,
+    val flavorTextEntries: JsonArray,
     @SerializedName("forms_switchable")
     val formsSwitchable: Boolean,
     @SerializedName("gender_rate")
     val genderRate: Int,
     @SerializedName("genera")
-    val genera: List<Genera>,
+    val genera: JsonArray,
     @SerializedName("generation")
-    val generation: Generation,
+    val generation: JsonObject,
     @SerializedName("growth_rate")
-    val growthRate: GrowthRate,
+    val growthRate: JsonObject,
     @SerializedName("habitat")
-    val habitat: Habitat,
+    val habitat: JsonObject,
     @SerializedName("has_gender_differences")
     val hasGenderDifferences: Boolean,
     @SerializedName("hatch_counter")

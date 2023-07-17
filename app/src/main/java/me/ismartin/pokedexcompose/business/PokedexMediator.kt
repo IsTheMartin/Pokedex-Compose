@@ -5,10 +5,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
 import me.ismartin.pokedexcompose.data.remote.RemoteRepository
+import me.ismartin.pokedexcompose.data.remote.models.pokemon.Pokemon
 import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonResult
-import me.ismartin.pokedexcompose.data.remote.models.pokemon.SimplePokemonResult
 import me.ismartin.pokedexcompose.data.remote.models.specie.Specie
-import me.ismartin.pokedexcompose.data.remote.models.stat.StatResult
 import me.ismartin.pokedexcompose.data.remote.models.type.TypeResult
 import javax.inject.Inject
 
@@ -24,27 +23,8 @@ class PokedexMediator @Inject constructor(
      * 5. Save in DB
      */
     suspend fun downloadAndSave() {
-        downloadStats()
         downloadTypes()
         downloadPokemonsList()
-    }
-
-    private suspend fun downloadStats() {
-        var nextPage: Any? = null
-        do {
-            when (val stats = remoteRepository.getStats()) {
-                is ApiResource.Failure -> Log.e(TAG, "error download stats: ${stats.message}")
-                is ApiResource.Success -> {
-                    nextPage = stats.data?.next
-                    saveStats(stats.data?.results ?: emptyList())
-                }
-            }
-        } while (nextPage != null)
-    }
-
-    private fun saveStats(stats: List<StatResult>) {
-        println("MRTN - Saving stats = $stats")
-        // todo: save results into DB
     }
 
     private suspend fun downloadTypes() {
@@ -84,7 +64,7 @@ class PokedexMediator @Inject constructor(
         } while (nextPage != null)
     }
 
-    private suspend fun savePokemons(pokemonList: List<SimplePokemonResult>, speciesCount: Int) {
+    private suspend fun savePokemons(pokemonList: List<PokemonResult>, speciesCount: Int) {
         pokemonList.forEach { pokemon ->
             val pokemonId = pokemon.url.getId()
             val pokemonDetails = downloadPokemonDetails(pokemonId)
@@ -95,10 +75,10 @@ class PokedexMediator @Inject constructor(
             }
             combine(pokemonDetails, pokemonSpecie) { details, specie ->
                 // todo: create entity
-                specie?.color // for testing
+                specie?.name // for testing
             }.collect {
                 // todo: save in db
-                println("MRTN - Pokemon $pokemonId color = ${it?.name}")
+                println("MRTN - Pokemon $pokemonId color = $it")
             }
         }
     }
@@ -110,7 +90,7 @@ class PokedexMediator @Inject constructor(
         }
     }
 
-    private suspend fun downloadPokemonDetails(id: Int): Flow<PokemonResult?> {
+    private suspend fun downloadPokemonDetails(id: Int): Flow<Pokemon?> {
         return when (val pokemon = remoteRepository.getPokemonById(id)) {
             is ApiResource.Failure -> {
                 Log.e(TAG, "error download pokemon #$id : ${pokemon.message}")

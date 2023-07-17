@@ -1,12 +1,10 @@
 package me.ismartin.pokedexcompose.data.remote
 
 import me.ismartin.pokedexcompose.business.ApiResource
+import me.ismartin.pokedexcompose.data.remote.models.pokemon.Pokemon
 import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonPageResult
-import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonResult
 import me.ismartin.pokedexcompose.data.remote.models.specie.Specie
 import me.ismartin.pokedexcompose.data.remote.models.specie.SpeciePageResult
-import me.ismartin.pokedexcompose.data.remote.models.stat.Stat
-import me.ismartin.pokedexcompose.data.remote.models.stat.StatPageResult
 import me.ismartin.pokedexcompose.data.remote.models.type.Type
 import me.ismartin.pokedexcompose.data.remote.models.type.TypePageResult
 import retrofit2.Response
@@ -14,12 +12,10 @@ import javax.inject.Inject
 
 interface RemoteRepository {
 
-    suspend fun getStats(): ApiResource<StatPageResult>
-    suspend fun getStatById(id: Int): ApiResource<Stat>
     suspend fun getTypes(): ApiResource<TypePageResult>
     suspend fun getTypeById(id: Int): ApiResource<Type>
     suspend fun getPokemons(offset: Int, limit: Int): ApiResource<PokemonPageResult>
-    suspend fun getPokemonById(id: Int): ApiResource<PokemonResult>
+    suspend fun getPokemonById(id: Int): ApiResource<Pokemon>
     suspend fun getSpecies(): ApiResource<SpeciePageResult>
     suspend fun getSpecieById(id: Int): ApiResource<Specie>
 }
@@ -27,16 +23,6 @@ interface RemoteRepository {
 class RemoteRepositoryImpl @Inject constructor(
     private val api: PokeApiService
 ) : RemoteRepository {
-
-    override suspend fun getStats(): ApiResource<StatPageResult> {
-        val apiResponse = api.getStatList()
-        return getApiResourceResponse(apiResponse)
-    }
-
-    override suspend fun getStatById(id: Int): ApiResource<Stat> {
-        val apiResponse = api.getStatById(id)
-        return getApiResourceResponse(apiResponse)
-    }
 
     override suspend fun getTypes(): ApiResource<TypePageResult> {
         val apiResponse = api.getTypeList()
@@ -53,7 +39,7 @@ class RemoteRepositoryImpl @Inject constructor(
         return getApiResourceResponse(apiResponse)
     }
 
-    override suspend fun getPokemonById(id: Int): ApiResource<PokemonResult> {
+    override suspend fun getPokemonById(id: Int): ApiResource<Pokemon> {
         val apiResponse = api.getPokemonById(id)
         return getApiResourceResponse(apiResponse)
     }

@@ -17,7 +17,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    private const val IS_DEBUG = true //todo: check BuildConfig
+    private const val IS_DEBUG = true // todo: check BuildConfig
 
     @Provides
     @Singleton
