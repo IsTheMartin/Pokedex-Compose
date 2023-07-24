@@ -2,20 +2,23 @@ package me.ismartin.pokedexcompose.ui.pokedex
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.cachedIn
+import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import me.ismartin.pokedexcompose.business.PokedexMediator
+import kotlinx.coroutines.flow.map
+import me.ismartin.pokedexcompose.data.local.entities.PokemonEntity
 import javax.inject.Inject
 
 @HiltViewModel
 class PokedexViewModel @Inject constructor(
-    private val pokedexMediator: PokedexMediator
+    pager: Pager<Int, PokemonEntity>
 ) : ViewModel() {
 
-    init {
-        viewModelScope.launch(Dispatchers.IO) {
-            pokedexMediator.downloadAndSave()
+    val pokemonPaging = pager
+        .flow
+        .map { pagingData ->
+            pagingData.map { it }
         }
-    }
+        .cachedIn(viewModelScope)
 }

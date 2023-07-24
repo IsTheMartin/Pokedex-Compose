@@ -1,125 +1,101 @@
 package me.ismartin.pokedexcompose.business
 
-import android.util.Log
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOf
+import android.net.Uri
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadType
+import androidx.paging.PagingState
+import androidx.paging.RemoteMediator
+import androidx.room.withTransaction
+import me.ismartin.pokedexcompose.business.mappers.toEntity
+import me.ismartin.pokedexcompose.data.local.LocalRepository
+import me.ismartin.pokedexcompose.data.local.PokedexDatabase
+import me.ismartin.pokedexcompose.data.local.entities.PokemonEntity
+import me.ismartin.pokedexcompose.data.local.entities.RemoteKeyEntity
 import me.ismartin.pokedexcompose.data.remote.RemoteRepository
-import me.ismartin.pokedexcompose.data.remote.models.pokemon.Pokemon
 import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonResult
-import me.ismartin.pokedexcompose.data.remote.models.specie.Specie
-import me.ismartin.pokedexcompose.data.remote.models.type.TypeResult
+import retrofit2.HttpException
+import java.io.IOException
 import javax.inject.Inject
 
+@OptIn(ExperimentalPagingApi::class)
 class PokedexMediator @Inject constructor(
-    private val remoteRepository: RemoteRepository
-) {
+    private val remoteRepository: RemoteRepository,
+    private val localRepository: LocalRepository,
+    private val database: PokedexDatabase,
+) : RemoteMediator<Int, PokemonEntity>() {
 
-    /**
-     * 1. Download and save in DB: stats and types only first time
-     * 2. Download pokemon list
-     * 3. For each pokemon, download specie
-     * 4. Map pokemon to entity
-     * 5. Save in DB
-     */
-    suspend fun downloadAndSave() {
-        downloadTypes()
-        downloadPokemonsList()
+    override suspend fun initialize(): InitializeAction {
+        val remoteKey = localRepository.getRemoteKeyById(REMOTE_KEY)
+        return if (remoteKey == null) {
+            InitializeAction.LAUNCH_INITIAL_REFRESH
+        } else {
+            InitializeAction.SKIP_INITIAL_REFRESH
+        }
     }
 
-    private suspend fun downloadTypes() {
-        var nextPage: Any? = null
-        do {
-            when (val types = remoteRepository.getTypes()) {
-                is ApiResource.Failure -> Log.e(TAG, "error download types: ${types.message}")
-                is ApiResource.Success -> {
-                    nextPage = types.data?.next
-                    saveTypes(types.data?.typeResults ?: emptyList())
+    override suspend fun load(
+        loadType: LoadType,
+        state: PagingState<Int, PokemonEntity>
+    ): MediatorResult {
+        return try {
+            val loadKey = when (loadType) {
+                LoadType.REFRESH -> localRepository.getRemoteKeyById(REMOTE_KEY)?.nextOffset ?: 0
+                LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+                LoadType.APPEND -> {
+                    val remoteKey = localRepository.getRemoteKeyById(REMOTE_KEY)
+                    if (remoteKey == null || remoteKey.nextOffset == 0) {
+                        return MediatorResult.Success(endOfPaginationReached = true)
+                    }
+                    remoteKey.nextOffset
                 }
             }
-        } while (nextPage != null)
-    }
-
-    private fun saveTypes(types: List<TypeResult>) {
-        println("MRTN - Saving types = $types")
-        // todo: save results into DB
-    }
-
-    private suspend fun downloadPokemonsList() {
-        var offset = 0
-        var nextPage: String? = null
-        val speciesCount = downloadSpeciesCount()
-        do {
-            when (val pokemons = remoteRepository.getPokemons(offset, PAGE_SIZE)) {
-                is ApiResource.Failure -> Log.e(TAG, "downloadPokemonsList: ${pokemons.message}")
-                is ApiResource.Success -> {
-                    offset += PAGE_SIZE
-                    nextPage = pokemons.data?.next
-                    savePokemons(
-                        pokemonList = pokemons.data?.results ?: emptyList(),
-                        speciesCount = speciesCount
-                    )
-                }
+            val pokemons = remoteRepository.getPokemons(
+                offset = loadKey,
+                limit = state.config.pageSize
+            )
+            val nextOffset = pokemons.data?.next.getNextOffset()
+            val pokemonEntities = getPokemonEntity(pokemons.data?.results ?: emptyList())
+            database.withTransaction {
+                localRepository.insertPokemons(pokemonEntities)
+                database.remoteKeyDao().insert(RemoteKeyEntity(id = "pokemon", nextOffset = nextOffset))
             }
-        } while (nextPage != null)
+
+            MediatorResult.Success(
+                endOfPaginationReached = pokemons.data?.next == null
+            )
+        } catch (e: IOException) {
+            MediatorResult.Error(e)
+        } catch (e: HttpException) {
+            MediatorResult.Error(e)
+        }
     }
 
-    private suspend fun savePokemons(pokemonList: List<PokemonResult>, speciesCount: Int) {
-        pokemonList.forEach { pokemon ->
+    private suspend fun getPokemonEntity(pokemons: List<PokemonResult>): List<PokemonEntity> {
+        return pokemons.mapNotNull { pokemon ->
             val pokemonId = pokemon.url.getId()
-            val pokemonDetails = downloadPokemonDetails(pokemonId)
-            val pokemonSpecie = if (pokemonId <= speciesCount) {
-                downloadSpecie(pokemonId)
-            } else {
-                flowOf(null)
-            }
-            combine(pokemonDetails, pokemonSpecie) { details, specie ->
-                // todo: create entity
-                specie?.name // for testing
-            }.collect {
-                // todo: save in db
-                println("MRTN - Pokemon $pokemonId color = $it")
+            remoteRepository.getPokemonById(pokemonId).data?.let { pokemonDetails ->
+                val specieId = pokemonDetails.species.url.getId()
+                val specie = remoteRepository.getSpecieById(specieId)
+                pokemonDetails.toEntity(specie.data)
             }
         }
-    }
-
-    private suspend fun downloadSpeciesCount(): Int {
-        return when (val species = remoteRepository.getSpecies()) {
-            is ApiResource.Failure -> -1
-            is ApiResource.Success -> species.data?.count ?: -1
-        }
-    }
-
-    private suspend fun downloadPokemonDetails(id: Int): Flow<Pokemon?> {
-        return when (val pokemon = remoteRepository.getPokemonById(id)) {
-            is ApiResource.Failure -> {
-                Log.e(TAG, "error download pokemon #$id : ${pokemon.message}")
-                flowOf(null)
-            }
-
-            is ApiResource.Success -> {
-                flowOf(pokemon.data)
-            }
-        }
-    }
-
-    private suspend fun downloadSpecie(id: Int): Flow<Specie?> {
-        return when (val specie = remoteRepository.getSpecieById(id)) {
-            is ApiResource.Failure -> {
-                Log.e(TAG, "error download specie #$id: ${specie.message}")
-                flowOf(null)
-            }
-            is ApiResource.Success -> { flowOf(specie.data) }
-        }
-    }
-
-    companion object {
-        private const val TAG = "PokedexMediator"
-        private const val PAGE_SIZE = 20
     }
 
     private fun String.getId(): Int {
-        val splitUrl = this.split("/")
+        val splitUrl = this.split(URL_SEPARATOR)
         return splitUrl[splitUrl.size - 2].toInt()
+    }
+
+    private fun String?.getNextOffset(): Int {
+        return if (this != null) {
+            val uri = Uri.parse(this)
+            uri.getQueryParameter(OFFSET_PARAMETER)?.toInt() ?: 0
+        } else 0
+    }
+
+    companion object {
+        private const val REMOTE_KEY = "pokemon"
+        private const val OFFSET_PARAMETER = "offset"
+        private const val URL_SEPARATOR = "/"
     }
 }

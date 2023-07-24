@@ -12,6 +12,8 @@ object Versions {
     const val jUnitExt = "1.1.5"
     const val ktlint = "0.45.2"
     const val lifecycleKtx = "2.3.1"
+    const val pagingCore = "3.1.1"
+    const val pagingCompose = "1.0.0-alpha18"
     const val retrofit = "2.9.0"
     const val okHttp = "4.11.0"
     const val room = "2.5.1"

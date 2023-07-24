@@ -1,6 +1,7 @@
 package me.ismartin.pokedexcompose.data.remote.models.specie
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
@@ -26,7 +27,7 @@ data class Specie(
     @SerializedName("growth_rate")
     val growthRate: JsonObject,
     @SerializedName("habitat")
-    val habitat: JsonObject,
+    val habitat: JsonElement?,
     @SerializedName("has_gender_differences")
     val hasGenderDifferences: Boolean,
     @SerializedName("hatch_counter")

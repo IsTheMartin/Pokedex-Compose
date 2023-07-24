@@ -43,6 +43,11 @@ object Dependencies {
         const val ext = "androidx.test.ext:junit:${Versions.jUnitExt}"
     }
 
+    object Paging {
+        const val core = "androidx.paging:paging-runtime-ktx:${Versions.pagingCore}"
+        const val compose = "androidx.paging:paging-compose:${Versions.pagingCompose}"
+    }
+
     object Pinterest {
         val ktlint = "com.pinterest:ktlint:${Versions.ktlint}"
     }
@@ -76,6 +81,8 @@ object Dependencies {
         Gson.core,
         Hilt.daggerCore,
         Hilt.navigationCompose,
+        Paging.compose,
+        Paging.core,
         Retrofit.core,
         Retrofit.gsonConverter,
         Retrofit.loggingInterceptor,
