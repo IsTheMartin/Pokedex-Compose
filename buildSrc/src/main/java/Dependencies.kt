@@ -10,6 +10,7 @@ object Dependencies {
     object Coil {
         const val core = "io.coil-kt:coil:${Versions.coil}"
         const val compose = "io.coil-kt:coil-compose:${Versions.coil}"
+        const val svg = "io.coil-kt:coil-svg:${Versions.coil}"
     }
 
     object Compose {
@@ -73,6 +74,7 @@ object Dependencies {
         Android.lifecycleKtx,
         Coil.compose,
         Coil.core,
+        Coil.svg,
         Compose.activity,
         Compose.core,
         Compose.graphics,

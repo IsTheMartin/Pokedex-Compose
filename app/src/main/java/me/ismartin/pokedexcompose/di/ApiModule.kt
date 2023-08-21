@@ -11,6 +11,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -18,6 +19,7 @@ import javax.inject.Singleton
 object ApiModule {
 
     private const val IS_DEBUG = true // todo: check BuildConfig
+    private const val TIMEOUT = 20L
 
     @Provides
     @Singleton
@@ -26,10 +28,14 @@ object ApiModule {
             it.level = HttpLoggingInterceptor.Level.BODY
         }
         OkHttpClient.Builder()
+            .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT, TimeUnit.SECONDS)
             .addInterceptor(loggingInterceptor)
             .build()
     } else {
         OkHttpClient.Builder()
+            .connectTimeout(TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT, TimeUnit.SECONDS)
             .build()
     }
 

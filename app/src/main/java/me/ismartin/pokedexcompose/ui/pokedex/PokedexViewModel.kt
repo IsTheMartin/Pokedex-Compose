@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.map
+import me.ismartin.pokedexcompose.business.mappers.toPokedexPokemon
 import me.ismartin.pokedexcompose.data.local.entities.PokemonEntity
 import javax.inject.Inject
 
@@ -18,7 +19,9 @@ class PokedexViewModel @Inject constructor(
     val pokemonPaging = pager
         .flow
         .map { pagingData ->
-            pagingData.map { it }
+            pagingData.map { data ->
+                data.toPokedexPokemon()
+            }
         }
         .cachedIn(viewModelScope)
 }
