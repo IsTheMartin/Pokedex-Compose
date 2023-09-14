@@ -1,7 +1,6 @@
 package me.ismartin.pokedexcompose.data.remote.models.pokemon
 
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 
 data class Pokemon(
@@ -24,11 +23,11 @@ data class Pokemon(
     @SerializedName("species")
     val species: Species,
     @SerializedName("sprites")
-    val sprites: JsonObject,
+    val sprites: Sprites,
     @SerializedName("stats")
-    val stats: JsonArray,
+    val stats: List<Stat>,
     @SerializedName("types")
-    val types: JsonArray,
+    val types: List<Type>,
     @SerializedName("weight")
     val weight: Int
 )

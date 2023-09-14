@@ -10,19 +10,46 @@ import me.ismartin.pokedexcompose.business.models.PokemonBackgroundColor
 import me.ismartin.pokedexcompose.business.models.PokemonTypeColor
 import me.ismartin.pokedexcompose.business.models.Sprites
 import me.ismartin.pokedexcompose.data.local.entities.PokemonEntity
+import me.ismartin.pokedexcompose.data.local.entities.PokemonSpritesEntity
+import me.ismartin.pokedexcompose.data.local.entities.PokemonStatsEntity
+import me.ismartin.pokedexcompose.data.local.entities.PokemonTypesEntity
 import me.ismartin.pokedexcompose.data.remote.models.pokemon.Pokemon
 import me.ismartin.pokedexcompose.data.remote.models.specie.Specie
 import me.ismartin.pokedexcompose.ui.theme.Purple80
+import timber.log.Timber
 import java.lang.Exception
 
 fun Pokemon.toEntity(specie: Specie?): PokemonEntity {
+    val spritesEntity = PokemonSpritesEntity(
+        frontDefault = sprites.frontDefault,
+        backDefault = sprites.backDefault,
+        frontShiny = sprites.frontShiny,
+        dreamWorldFrontDefault = sprites.other.dreamWorld.frontDefault,
+        homeFrontDefault = sprites.other.home.frontDefault,
+        officialArtworkFrontDefault = sprites.other.officialArtwork.frontDefault
+    )
+    val statsEntity = stats.map { stat ->
+        PokemonStatsEntity(
+            baseStat = stat.baseStat,
+            effort = stat.effort,
+            statName = stat.stat.name,
+            url = stat.stat.url
+        )
+    }
+    val typesEntity = types.map {
+        PokemonTypesEntity(
+            slot = it.slot,
+            typeName = it.type.name,
+            url = it.type.url
+        )
+    }
     return PokemonEntity(
         id = id,
         name = name,
-        sprites = sprites.toString(),
+        sprites = spritesEntity,
         weight = weight,
-        stats = stats.toString(),
-        types = types.toString(),
+        stats = statsEntity,
+        types = typesEntity,
         baseHappiness = baseExperience,
         height = height,
         baseExperience = baseExperience,
@@ -42,7 +69,7 @@ fun Pokemon.toEntity(specie: Specie?): PokemonEntity {
 }
 
 fun PokemonEntity.toPokedexPokemon(): PokedexPokemon {
-    val sprites = getSprites(sprites, id)
+    val sprites = getSprites(sprites)
     val backgroundColor = getBackgroundColor(color, id)
     val types = getTypes(types, id)
 
@@ -55,60 +82,31 @@ fun PokemonEntity.toPokedexPokemon(): PokedexPokemon {
     )
 }
 
-private fun getSprites(spriteString: String, id: Int): Sprites {
-    return try {
-        val spriteJsonObject = JsonParser.parseString(spriteString).asJsonObject
-        val otherSprites = spriteJsonObject.getAsJsonObject("other")
-        val dreamWorldSprites = otherSprites.getAsJsonObject("dream_world")
-        val homeSprites = otherSprites.getAsJsonObject("home")
-        val officialArtworkSprites = otherSprites.getAsJsonObject("official-artwork")
-        Sprites(
-            frontDefault = if (spriteJsonObject != null) {
-                spriteJsonObject.get("front_default")?.asString.orEmpty()
-            } else "",
-            backDefault = if (spriteJsonObject != null) {
-                spriteJsonObject.get("back_default")?.asString.orEmpty()
-            } else "",
-            dreamWorldFrontDefault = if (dreamWorldSprites != null) {
-                dreamWorldSprites.get("front_default")?.asString.orEmpty()
-            } else null,
-            homeFrontDefault = if (homeSprites != null) {
-                homeSprites.get("front_default")?.asString.orEmpty()
-            } else null,
-            officialArtWorkFrontDefault = if (officialArtworkSprites != null) {
-                officialArtworkSprites.get("front_default")?.asString.orEmpty()
-            } else null
-        )
-    } catch (e: Exception) {
-        println("MRTN - cannot get sprites object for pokemon $id - ${e.message}")
-        Sprites()
-    }
+private fun getSprites(spriteEntity: PokemonSpritesEntity): Sprites {
+    return Sprites(
+        frontDefault = spriteEntity.frontDefault,
+        backDefault = spriteEntity.backDefault,
+        dreamWorldFrontDefault = spriteEntity.dreamWorldFrontDefault,
+        homeFrontDefault = spriteEntity.homeFrontDefault,
+        officialArtWorkFrontDefault = spriteEntity.officialArtworkFrontDefault,
+    )
 }
 
 private fun getBackgroundColor(colorJson: String?, id: Int): Color {
     return try {
         PokemonBackgroundColor.getColor(JsonParser.parseString(colorJson).asJsonObject.get("name").asString)
     } catch (e: Exception) {
-        println("MRTN - cannot get color for pokemon $id - ${e.message}")
+        Timber.e("Cannot get color for pokemon $id - ${e.message}")
         Purple80
     }
 }
 
-private fun getTypes(typesJson: String, id: Int): List<Pair<String, Color>> {
-    return try {
-        JsonParser.parseString(typesJson)
-            .asJsonArray
-            .map {
-                val type = it.asJsonObject
-                    .getAsJsonObject("type")
-                    .get("name")
-                    .asString
-                    .capitalize(Locale.current)
-                val color = PokemonTypeColor.getColor(type)
-                Pair(type, color)
-            }
-    } catch (e: Exception) {
-        println("MRTN - cannot get types for pokemon $id - ${e.message}")
-        emptyList()
-    }
+private fun getTypes(types: List<PokemonTypesEntity>, id: Int): List<Pair<String, Color>> {
+    return types
+        .sortedBy { it.slot }
+        .map { type ->
+            val color = PokemonTypeColor.getColor(type.typeName)
+            val typeName = type.typeName.capitalize(Locale.current)
+            Pair(typeName, color)
+        }
 }

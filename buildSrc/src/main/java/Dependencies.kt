@@ -69,6 +69,10 @@ object Dependencies {
         const val test = "androidx.room:room-testing:${Versions.room}"
     }
 
+    object Timber {
+        const val core = "com.jakewharton.timber:timber:${Versions.timber}"
+    }
+
     val appLibraries = arrayListOf(
         Android.coreKtx,
         Android.lifecycleKtx,
@@ -91,7 +95,8 @@ object Dependencies {
         Retrofit.okHttp,
         Room.core,
         Room.extension,
-        Room.paging
+        Room.paging,
+        Timber.core,
     )
 
     val kaptLibraries = arrayListOf(

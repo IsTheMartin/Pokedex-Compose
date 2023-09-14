@@ -1,5 +1,6 @@
 package me.ismartin.pokedexcompose.data.local.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -7,10 +8,11 @@ import androidx.room.PrimaryKey
 data class PokemonEntity(
     @PrimaryKey val id: Int,
     val name: String,
-    val sprites: String,
+    @Embedded(prefix = "sprite_")
+    val sprites: PokemonSpritesEntity,
     val weight: Int,
-    val stats: String,
-    val types: String,
+    val stats: List<PokemonStatsEntity>,
+    val types: List<PokemonTypesEntity>,
     val baseExperience: Int,
     val height: Int,
     val baseHappiness: Int?,
@@ -26,4 +28,26 @@ data class PokemonEntity(
     val isBaby: Boolean?,
     val isLegendary: Boolean?,
     val isMythical: Boolean?,
+)
+
+data class PokemonTypesEntity(
+    val slot: Int,
+    val typeName: String,
+    val url: String,
+)
+
+data class PokemonSpritesEntity(
+    val frontDefault: String,
+    val backDefault: String? = null,
+    val frontShiny: String?,
+    val dreamWorldFrontDefault: String?,
+    val homeFrontDefault: String?,
+    val officialArtworkFrontDefault: String?,
+)
+
+data class PokemonStatsEntity(
+    val baseStat: Int,
+    val effort: Int,
+    val statName: String,
+    val url: String,
 )

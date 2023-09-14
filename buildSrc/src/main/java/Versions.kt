@@ -17,5 +17,6 @@ object Versions {
     const val retrofit = "2.9.0"
     const val okHttp = "4.11.0"
     const val room = "2.5.1"
+    const val timber = "5.0.1"
 
 }

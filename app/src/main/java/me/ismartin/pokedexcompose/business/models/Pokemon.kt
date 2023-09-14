@@ -14,7 +14,7 @@ data class PokedexPokemon(
 
 data class Sprites(
     val frontDefault: String = "",
-    val backDefault: String = "",
+    val backDefault: String? = null,
     val dreamWorldFrontDefault: String? = null,
     val homeFrontDefault: String? = null,
     val officialArtWorkFrontDefault: String? = null,
