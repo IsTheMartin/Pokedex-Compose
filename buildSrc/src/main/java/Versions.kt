@@ -3,6 +3,7 @@ object Versions {
     const val androidCoreKtx = "1.8.0"
     const val coil = "2.4.0"
     const val compose = "1.5.1"
+    const val composeNavigation = "2.5.3"
     const val espresso = "3.5.1"
     const val gson = "2.10.1"
     const val hilt = "2.44"

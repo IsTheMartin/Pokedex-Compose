@@ -21,6 +21,7 @@ object Dependencies {
         const val graphics = "androidx.compose.ui:ui-graphics"
         const val jUnit4 = "androidx.compose.ui:ui-test-junit4"
         const val material3 = "androidx.compose.material3:material3"
+        const val navigation = "androidx.navigation:navigation-compose:${Versions.composeNavigation}"
         const val tooling = "androidx.compose.ui:ui-tooling-preview"
     }
 
@@ -83,6 +84,7 @@ object Dependencies {
         Compose.core,
         Compose.graphics,
         Compose.material3,
+        Compose.navigation,
         Compose.tooling,
         Gson.core,
         Hilt.daggerCore,
