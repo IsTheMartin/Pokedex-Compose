@@ -10,6 +10,7 @@ object Dependencies {
     object Coil {
         const val core = "io.coil-kt:coil:${Versions.coil}"
         const val compose = "io.coil-kt:coil-compose:${Versions.coil}"
+        const val svg = "io.coil-kt:coil-svg:${Versions.coil}"
     }
 
     object Compose {
@@ -20,6 +21,7 @@ object Dependencies {
         const val graphics = "androidx.compose.ui:ui-graphics"
         const val jUnit4 = "androidx.compose.ui:ui-test-junit4"
         const val material3 = "androidx.compose.material3:material3"
+        const val navigation = "androidx.navigation:navigation-compose:${Versions.composeNavigation}"
         const val tooling = "androidx.compose.ui:ui-tooling-preview"
     }
 
@@ -43,6 +45,11 @@ object Dependencies {
         const val ext = "androidx.test.ext:junit:${Versions.jUnitExt}"
     }
 
+    object Paging {
+        const val core = "androidx.paging:paging-runtime-ktx:${Versions.pagingCore}"
+        const val compose = "androidx.paging:paging-compose:${Versions.pagingCompose}"
+    }
+
     object Pinterest {
         val ktlint = "com.pinterest:ktlint:${Versions.ktlint}"
     }
@@ -63,26 +70,35 @@ object Dependencies {
         const val test = "androidx.room:room-testing:${Versions.room}"
     }
 
+    object Timber {
+        const val core = "com.jakewharton.timber:timber:${Versions.timber}"
+    }
+
     val appLibraries = arrayListOf(
         Android.coreKtx,
         Android.lifecycleKtx,
         Coil.compose,
         Coil.core,
+        Coil.svg,
         Compose.activity,
         Compose.core,
         Compose.graphics,
         Compose.material3,
+        Compose.navigation,
         Compose.tooling,
         Gson.core,
         Hilt.daggerCore,
         Hilt.navigationCompose,
+        Paging.compose,
+        Paging.core,
         Retrofit.core,
         Retrofit.gsonConverter,
         Retrofit.loggingInterceptor,
         Retrofit.okHttp,
         Room.core,
         Room.extension,
-        Room.paging
+        Room.paging,
+        Timber.core,
     )
 
     val kaptLibraries = arrayListOf(

@@ -3,14 +3,15 @@ package me.ismartin.pokedexcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.paging.compose.collectAsLazyPagingItems
 import dagger.hilt.android.AndroidEntryPoint
+import me.ismartin.pokedexcompose.ui.PokedexNavigation
+import me.ismartin.pokedexcompose.ui.pokedex.PokedexScreen
+import me.ismartin.pokedexcompose.ui.pokedex.PokedexViewModel
 import me.ismartin.pokedexcompose.ui.theme.PokedexComposeTheme
 
 @AndroidEntryPoint
@@ -20,29 +21,18 @@ class MainActivity : ComponentActivity() {
         setContent {
             PokedexComposeTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
+                val navController = rememberNavController()
+                val viewModel: PokedexViewModel = hiltViewModel()
+                val pokedex = viewModel.pokemonPaging.collectAsLazyPagingItems()
+                NavHost(
+                    navController = navController,
+                    startDestination = PokedexNavigation.PokedexScreen.route
                 ) {
-                    Greeting("Android")
+                    composable(route = PokedexNavigation.PokedexScreen.route) {
+                        PokedexScreen(pokemonList = pokedex)
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier,
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PokedexComposeTheme {
-        Greeting("Android")
     }
 }

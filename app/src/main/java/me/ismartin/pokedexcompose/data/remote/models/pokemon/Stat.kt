@@ -8,5 +8,12 @@ data class Stat(
     @SerializedName("effort")
     val effort: Int,
     @SerializedName("stat")
-    val stat: SubStat
+    val stat: StatName
+)
+
+data class StatName(
+    @SerializedName("name")
+    val name: String,
+    @SerializedName("url")
+    val url: String
 )

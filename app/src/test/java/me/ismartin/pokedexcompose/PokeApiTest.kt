@@ -1,5 +1,6 @@
 package me.ismartin.pokedexcompose
 
+import kotlinx.coroutines.runBlocking
 import me.ismartin.pokedexcompose.data.remote.PokeApiService
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -36,12 +37,12 @@ class PokeApiTest {
     }
 
     @Test
-    fun `check empty pokedex`() {
+    fun `check empty pokedex`() = runBlocking {
         val mockResponse = MockResponse()
         mockResponse.setBody("{}")
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getPokemonList(0, 20).execute()
+        val response = pokeApiService.getPokemonList(0, 20)
         val request = mockWebServer.takeRequest()
         assertEquals("/pokemon?offset=0&limit=20", request.path)
         assertEquals("GET", request.method)
@@ -53,13 +54,13 @@ class PokeApiTest {
     }
 
     @Test
-    fun `check pokedex with results`() {
+    fun `check pokedex with results`() = runBlocking {
         val mockResponse = MockResponse()
         val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_LIST_JSON)
         mockResponse.setBody(jsonResponse)
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getPokemonList(0, 20).execute()
+        val response = pokeApiService.getPokemonList(0, 20)
         val request = mockWebServer.takeRequest()
         assertEquals("/pokemon?offset=0&limit=20", request.path)
         assertEquals("GET", request.method)
@@ -71,12 +72,12 @@ class PokeApiTest {
     }
 
     @Test
-    fun `check empty pokemon`() {
+    fun `check empty pokemon`() = runBlocking {
         val mockResponse = MockResponse()
         mockResponse.setBody("{}")
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getPokemonById(4).execute()
+        val response = pokeApiService.getPokemonById(4)
         val request = mockWebServer.takeRequest()
         assertEquals("/pokemon/4", request.path)
         assertEquals("GET", request.method)
@@ -89,13 +90,13 @@ class PokeApiTest {
     }
 
     @Test
-    fun `check pokemon with results`() {
+    fun `check pokemon with results`() = runBlocking {
         val mockResponse = MockResponse()
         val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_JSON)
         mockResponse.setBody(jsonResponse)
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getPokemonById(25).execute()
+        val response = pokeApiService.getPokemonById(25)
         val request = mockWebServer.takeRequest()
         assertEquals("/pokemon/25", request.path)
         assertEquals("GET", request.method)
@@ -108,13 +109,13 @@ class PokeApiTest {
     }
 
     @Test
-    fun `check pokemon type list with results`() {
+    fun `check pokemon type list with results`() = runBlocking {
         val mockResponse = MockResponse()
         val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_TYPE_LIST_JSON)
         mockResponse.setBody(jsonResponse)
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getTypeList().execute()
+        val response = pokeApiService.getTypeList()
         val request = mockWebServer.takeRequest()
         assertEquals("/type", request.path)
         assertEquals("GET", request.method)
@@ -126,91 +127,73 @@ class PokeApiTest {
     }
 
     @Test
-    fun `check pokemon type with results`() {
+    fun `check pokemon type with results`() = runBlocking {
         val mockResponse = MockResponse()
         val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_TYPE_JSON)
         mockResponse.setBody(jsonResponse)
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getTypeById(10).execute()
+        val response = pokeApiService.getTypeById(10)
         val request = mockWebServer.takeRequest()
         assertEquals("/type/10", request.path)
         assertEquals("GET", request.method)
 
         assertTrue(response.isSuccessful)
-        val typeId = response.body()?.id
-        val typeName = response.body()?.name
-        val doubleDamageToList = response.body()?.damageRelations?.doubleDamageTo
+        val bodyResponse = response.body()
+        assertNotNull(bodyResponse)
+        val typeId = bodyResponse!!.id
+        val typeName = bodyResponse.name
+        val doubleDamageToList = bodyResponse.damageRelations.getAsJsonArray("double_damage_from")
         assertEquals(10, typeId)
         assertEquals("fire", typeName)
         assertNotNull(doubleDamageToList)
-        assertTrue(doubleDamageToList!!.isNotEmpty())
+        assertFalse(doubleDamageToList!!.isEmpty)
     }
 
     @Test
-    fun `check pokemon stat list with results`() {
+    fun `check pokemon species list with results`() = runBlocking {
         val mockResponse = MockResponse()
-        val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_STAT_LIST_JSON)
+        val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_SPECIE_LIST_JSON)
         mockResponse.setBody(jsonResponse)
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getStatList().execute()
+        val response = pokeApiService.getPokemonSpecieList()
         val request = mockWebServer.takeRequest()
-        assertEquals("/stat", request.path)
+        assertEquals("/pokemon-species", request.path)
         assertEquals("GET", request.method)
 
         assertTrue(response.isSuccessful)
-        val stats = response.body()?.results
-        assertNotNull(stats)
-        assertEquals(8, response.body()?.count)
-        assertNull(response.body()?.next)
+        val specieCount = response.body()?.count
+        assertNotNull(specieCount)
+        assertEquals(1010, specieCount)
+        assertNotNull(response.body()?.next)
         assertNull(response.body()?.previous)
     }
 
     @Test
-    fun `check pokemon stat with results`() {
-        val mockResponse = MockResponse()
-        val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_STAT_JSON)
-        mockResponse.setBody(jsonResponse)
-        mockWebServer.enqueue(mockResponse)
-
-        val response = pokeApiService.getStatById(3).execute()
-        val request = mockWebServer.takeRequest()
-        assertEquals("/stat/3", request.path)
-        assertEquals("GET", request.method)
-
-        assertTrue(response.isSuccessful)
-        val statId = response.body()?.id
-        val statName = response.body()?.name
-        val statNames = response.body()?.names
-        assertEquals(3, statId)
-        assertEquals("defense", statName)
-        assertNotNull(statNames)
-        assertTrue(statNames!!.isNotEmpty())
-    }
-
-    @Test
-    fun `check pokemon specie with results`() {
+    fun `check pokemon specie with results`() = runBlocking {
         val mockResponse = MockResponse()
         val jsonResponse = JsonUtils.readFileResource(PokemonResponses.POKEMON_SPECIE_JSON)
         mockResponse.setBody(jsonResponse)
         mockWebServer.enqueue(mockResponse)
 
-        val response = pokeApiService.getPokemonSpecieById(25).execute()
+        val response = pokeApiService.getPokemonSpecieById(25)
         val request = mockWebServer.takeRequest()
         assertEquals("/pokemon-species/25", request.path)
         assertEquals("GET", request.method)
 
         assertTrue(response.isSuccessful)
-        val pokemonId = response.body()?.id
-        val pokemonName = response.body()?.name
-        val pokemonColor = response.body()?.color?.name
-        val isPokemonLegendary = response.body()?.isLegendary
+        val responseBody = response.body()
+        assertNotNull(responseBody)
+        val pokemonId = responseBody!!.id
+        val pokemonName = responseBody.name
+        val pokemonColor = responseBody.color.get("name").asString
+        val isPokemonLegendary = responseBody.isLegendary
         assertEquals(25, pokemonId)
         assertEquals("pikachu", pokemonName)
         assertNotNull(pokemonColor)
         assertEquals("yellow", pokemonColor!!)
         assertNotNull(isPokemonLegendary)
-        assertFalse(isPokemonLegendary!!)
+        assertFalse(isPokemonLegendary)
     }
 }
