@@ -4,7 +4,9 @@ object Dependencies {
 
     object Android {
         const val coreKtx = "androidx.core:core-ktx:${Versions.androidCoreKtx}"
+        const val coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.coroutines}"
         const val lifecycleKtx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycleKtx}"
+        const val splashScreen = "androidx.core:core-splashscreen:${Versions.splashScreen}"
     }
 
     object Coil {
@@ -76,7 +78,9 @@ object Dependencies {
 
     val appLibraries = arrayListOf(
         Android.coreKtx,
+        Android.coroutines,
         Android.lifecycleKtx,
+        Android.splashScreen,
         Coil.compose,
         Coil.core,
         Coil.svg,

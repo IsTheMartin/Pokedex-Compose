@@ -1,7 +1,7 @@
 package me.ismartin.pokedexcompose.data.remote
 
 import me.ismartin.pokedexcompose.data.remote.models.pokemon.Pokemon
-import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonPageResult
+import me.ismartin.pokedexcompose.data.remote.models.pokemon.PokemonPaged
 import me.ismartin.pokedexcompose.data.remote.models.specie.Specie
 import me.ismartin.pokedexcompose.data.remote.models.specie.SpeciePageResult
 import me.ismartin.pokedexcompose.data.remote.models.type.Type
@@ -17,7 +17,7 @@ interface PokeApiService {
     suspend fun getPokemonList(
         @Query("offset") offset: Int,
         @Query("limit") limit: Int,
-    ): Response<PokemonPageResult>
+    ): Response<PokemonPaged>
 
     @GET("pokemon/{id}")
     suspend fun getPokemonById(

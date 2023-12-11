@@ -16,8 +16,11 @@ import me.ismartin.pokedexcompose.data.local.LocalRepositoryImpl
 import me.ismartin.pokedexcompose.data.local.PokedexDatabase
 import me.ismartin.pokedexcompose.data.local.daos.PokemonDao
 import me.ismartin.pokedexcompose.data.local.daos.RemoteKeyDao
+import me.ismartin.pokedexcompose.data.local.daos.SimplePokemonDao
 import me.ismartin.pokedexcompose.data.local.daos.TypeDao
 import me.ismartin.pokedexcompose.data.local.entities.PokemonEntity
+import me.ismartin.pokedexcompose.data.local.repositories.SimplePokemonRepository
+import me.ismartin.pokedexcompose.data.local.repositories.SimplePokemonRepositoryImpl
 import me.ismartin.pokedexcompose.data.remote.RemoteRepository
 import javax.inject.Singleton
 
@@ -47,15 +50,28 @@ object DatabaseModule {
     fun provideRemoteKeyDao(pokedexDatabase: PokedexDatabase) = pokedexDatabase.remoteKeyDao()
 
     @Provides
+    fun provideSimplePokemonDao(pokedexDatabase: PokedexDatabase) = pokedexDatabase.simplePokemonDao()
+
+    @Provides
     @Singleton
     fun provideLocalRepository(
         pokemonDao: PokemonDao,
         typeDao: TypeDao,
         remoteKeyDao: RemoteKeyDao,
+        simplePokemonDao: SimplePokemonDao,
     ): LocalRepository = LocalRepositoryImpl(
         pokemonDao = pokemonDao,
         typeDao = typeDao,
         remoteKeyDao = remoteKeyDao,
+        simplePokemonDao = simplePokemonDao
+    )
+
+    @Provides
+    @Singleton
+    fun provideSimplePokemonRepository(
+        simplePokemonDao: SimplePokemonDao
+    ): SimplePokemonRepository = SimplePokemonRepositoryImpl(
+        simplePokemonDao = simplePokemonDao
     )
 
     @OptIn(ExperimentalPagingApi::class)

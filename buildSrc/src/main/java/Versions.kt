@@ -4,6 +4,7 @@ object Versions {
     const val coil = "2.4.0"
     const val compose = "1.5.1"
     const val composeNavigation = "2.5.3"
+    const val coroutines = "1.5.0"
     const val espresso = "3.5.1"
     const val gson = "2.10.1"
     const val hilt = "2.44"
@@ -18,6 +19,7 @@ object Versions {
     const val retrofit = "2.9.0"
     const val okHttp = "4.11.0"
     const val room = "2.5.1"
+    const val splashScreen = "1.0.0"
     const val timber = "5.0.1"
 
 }

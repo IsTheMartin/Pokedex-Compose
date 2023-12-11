@@ -18,7 +18,7 @@ interface PokemonDao {
     @Query("SELECT COUNT(*) FROM pokemons")
     fun getPokemonCount(): Int
 
-    @Query("SELECT * FROM pokemons")
+    @Query("SELECT * FROM pokemons ORDER BY pokemons.id")
     fun getPagedPokedex(): PagingSource<Int, PokemonEntity>
 
     @Upsert
